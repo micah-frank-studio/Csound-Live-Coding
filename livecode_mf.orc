@@ -19,27 +19,32 @@ opcode makeOSC, 0, 0
 endop
 
 ; triangle LFO. Takes arguments for lo range, hi range and freq
-opcode trilfo, k,iii
+opcode linemod, k,iii
 	ilo, ihi, irate xin
 	kmod=linseg(ilo, irate*0.5, ihi, irate*0.5, ilo)
 	xout kmod
 endop
 
-opcode sbus_set, 0,Saa
-  Sbus, al, ar xin
-	Sbusl strcat Sbus, "l"
-	Sbusr strcat Sbus, "r"
-	chnset al, Sbusl
-	chnset ar, Sbusr
-endop
-
-opcode sbus_get,aa,S
-  Sbus xin
-	Sbusl strcat Sbus, "l"
-	Sbusr strcat Sbus, "r"
-	abusl chnget Sbusl
-	abusr chnget Sbusr
-xout abusl, abusr
+opcode pitchdelay, aa, aakkk 
+	ainL, ainR, kdelay, kfeedback, kfbpshift xin
+	imaxdelay = 3; seconds
+	alfoL lfo 0.05, 0.2 ; slightly mod the left delay time
+	abuf1		delayr	imaxdelay
+	atapL  deltap3    kdelay+alfoL
+	delayw ainL + (atapL * kfeedback)
+	fftinL  pvsanal   atapL, 1024, 256, 1024, 1 ; analyse it
+	ftpsL  pvscale   fftinL, kfbpshift, 1, 2          ; transpose it keeping formants
+	atpsL  pvsynth   ftpsL                     ; resynthesis
+	
+	;delay R
+	alfoR lfo 0.05, 0.1 ; slightly mod the right delay time
+	abuf2		delayr	imaxdelay
+	atapR  deltap3    kdelay+alfoR
+	delayw  ainR + (atapR * kfeedback)
+	fftinR  pvsanal   atapR, 1024, 256, 1024, 1
+	ftpsR  pvscale   fftinR, kfbpshift, 1, 2          
+	atpsR  pvsynth   ftpsR                    
+	xout atpsL, atpsR
 endop
 
 opcode seq, 0, iSSik[]k[]k[]k[]
@@ -70,31 +75,65 @@ opcode sound,S,Si
 xout Soundfile
 endop
 
+;; Mixer
+
+opcode busmix, 0,Saa
+  Sbus, al, ar xin
+	Sbusl strcat Sbus, "l"
+	Sbusr strcat Sbus, "r"
+	chnmix al, Sbusl
+	chnmix ar, Sbusr
+endop
+
+opcode sbus_get,aa,S
+  Sbus xin
+	Sbusl strcat Sbus, "l"
+	Sbusr strcat Sbus, "r"
+	abusl chnget Sbusl
+	abusr chnget Sbusr
+xout abusl, abusr
+endop
+
+/** Clear audio signals from bus channel */
+opcode sbus_clear, 0, S
+	Sbus xin
+  	Sbusl strcat Sbus, "l"
+	Sbusr strcat Sbus, "r"
+	chnclear Sbusl
+	chnclear Sbusr
+endop
+
+opcode render, 0, S
+	Schn xin
+	al, ar sbus_get Schn
+	outs(al,ar)
+	sbus_clear(Schn)
+endop
+
 instr grain
 Sname = p4
-kpitch=trilfo(p5,p6,p7)
-kstr=trilfo(p8,p9,p10) 
-kdens=trilfo(p11,p12,p13)
-kgrsize=trilfo(p14,p15,p16)
-kamp=0.2
+kpitch=linemod(p5,p6,p7)
+kstr=linemod(p8,p9,p10) 
+kdens=linemod(p11,p12,p13)
+kgrsize=linemod(p14,p15,p16)
+kamp=0.5
 ichn filenchnls Sname ;get number of channels. if mono then load up chn 1 twice.
 		if ichn = 2 then
-			giL ftgen 0, 0, 0, 1, Sname, 0, 0, 1
-			giR ftgen 0, 0, 0, 1, Sname, 0, 0, 2
-			prints "is stereo \n"
+			iL ftgen 0, 0, 0, 1, Sname, 0, 0, 1
+			iR ftgen 0, 0, 0, 1, Sname, 0, 0, 2
+		;	prints "is stereo \n"
 		else 
-			giL ftgen 0, 0, 0, 1, Sname, 0, 0, 1	
-			giR ftgen 0, 0, 0, 1, Sname, 0, 0, 1
+			iL ftgen 0, 0, 0, 1, Sname, 0, 0, 1	
+			iR ftgen 0, 0, 0, 1, Sname, 0, 0, 1
 		endif
 iolaps = 2
 ips     = 1/iolaps
-	a1L syncloop kamp, kdens, kpitch, kgrsize, ips*kstr, 0, ftlen(giL)/sr, giL, 1, iolaps
-;sbus_set("grain", agrainL, agrainR)
-	a1R syncloop kamp, kdens, kpitch, kgrsize, ips*kstr, 0, ftlen(giR)/sr, giR, 1, iolaps
-outs(a1L, a1R)
+	a1L syncloop kamp, kdens, kpitch, kgrsize, ips*kstr, 0, ftlen(iL)/sr, iL, 1, iolaps
+	a1R syncloop kamp, kdens, kpitch, kgrsize, ips*kstr, 0, ftlen(iR)/sr, iR, 1, iolaps
+;outs(a1L, a1R)
+;sbus_mix("grain", a1L, a1R)
+busmix("grain", a1L, a1R)
 endin
-
-
 
 
 
