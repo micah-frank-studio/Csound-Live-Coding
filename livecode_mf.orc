@@ -25,27 +25,6 @@ opcode linemod, k,iii
 	xout kmod
 endop
 
-opcode pitchdelay, aa, aakkk 
-	ainL, ainR, kdelay, kfeedback, kfbpshift xin
-	imaxdelay = 3; seconds
-	alfoL lfo 0.05, 0.2 ; slightly mod the left delay time
-	abuf1		delayr	imaxdelay
-	atapL  deltap3    kdelay+alfoL
-	delayw ainL + (atapL * kfeedback)
-	fftinL  pvsanal   atapL, 1024, 256, 1024, 1 ; analyse it
-	ftpsL  pvscale   fftinL, kfbpshift, 1, 2          ; transpose it keeping formants
-	atpsL  pvsynth   ftpsL                     ; resynthesis
-	
-	;delay R
-	alfoR lfo 0.05, 0.1 ; slightly mod the right delay time
-	abuf2		delayr	imaxdelay
-	atapR  deltap3    kdelay+alfoR
-	delayw  ainR + (atapR * kfeedback)
-	fftinR  pvsanal   atapR, 1024, 256, 1024, 1
-	ftpsR  pvscale   fftinR, kfbpshift, 1, 2          
-	atpsR  pvsynth   ftpsR                    
-	xout atpsL, atpsR
-endop
 
 opcode seq, 0, iSSik[]k[]k[]k[]
 	ichance, Sprocessor, Sample,idur, kparam1[], kparam2[], kparam3[], kparam4[] xin
@@ -59,7 +38,7 @@ opcode sometimes,i,iii
 	ichance, ival, idefault xin
 	iout init 0
 	icointoss = random(0,1)		
-	iout = icointoss > 0.5 ? ival : idefault
+	iout = icointoss < ichance ? ival : idefault
 	xout iout
 endop
 
@@ -108,6 +87,39 @@ opcode render, 0, S
 	al, ar sbus_get Schn
 	outs(al,ar)
 	sbus_clear(Schn)
+endop
+
+opcode pdelay, aa, Skkkk 
+	Schn, kdelay, kfeedback, kfbpshift, kmix xin
+	al, ar sbus_get Schn
+	imaxdelay = 3; seconds
+	alfoL lfo 0.05, 0.2 ; slightly mod the left delay time
+	abuf1		delayr	imaxdelay
+	atapL  deltap3    kdelay+alfoL
+	delayw  al+ (atapL * kfeedback)
+	fftinL  pvsanal   atapL, 1024, 256, 1024, 1 ; analyse it
+	ftpsL  pvscale   fftinL, kfbpshift, 1, 2          ; transpose it keeping formants
+	atpsL  pvsynth   ftpsL                     ; resynthesis
+	
+	;delay R
+	alfoR lfo 0.05, 0.1 ; slightly mod the right delay time
+	abuf2		delayr	imaxdelay
+	atapR  deltap3    kdelay+alfoR
+	delayw  ar + (atapR * kfeedback)
+	fftinR  pvsanal   atapR, 1024, 256, 1024, 1
+	ftpsR  pvscale   fftinR, kfbpshift, 1, 2          
+	atpsR  pvsynth   ftpsR                    
+	amixL=ntrpol(al, atpsL, kmix)
+	amixR=ntrpol(ar, atpsR, kmix)
+	xout amixL, amixR 
+	;outs(amixL, amixR)
+	sbus_clear(Schn)
+endop
+
+opcode reverb_mix, 0, aak
+  al, ar, krvb xin
+    sbus_mix(0, al, ar)
+    sbus_mix(1, al * krvb, ar * krvb)
 endop
 
 instr grain
