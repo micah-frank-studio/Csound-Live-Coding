@@ -1,6 +1,26 @@
 
 gi1 ftgen 1,0,8192,20,2,1 ;Hanning Window
 
+/** B-Format - Ambisonic encoding options */
+giBformChannels = 16 ;how many channels to encode? 36 is 5th order.
+
+opcode mixencoded, 0, aakk
+	ainL, ainR, kalpha, kbeta xin
+	imixchn init 0 
+	abenc[] init giBformChannels
+	abenc bformenc1 ainL, kalpha, kbeta
+	if imixchn<=giBformChannels then	
+	Smxchn strcat "benc", S(imixchn)
+	chnmix abenc[imixchn], Smxchn
+	imixchn+=1
+	endif 
+
+	fout "mix.wav", 24, abenc
+	aDecode[] init 2
+	aDecode  bformdec1 1, abenc
+	outs(aDecode[0], aDecode[1])
+endop
+
 opcode declickst, aa, aa
 ainL, ainR     xin
 aenv    linseg 0, 0.02, 1, p3 - 0.05, 1, 0.02, 0, 0.01, 0
@@ -19,9 +39,9 @@ opcode makeOSC, 0, 0
 endop
 
 ; triangle LFO. Takes arguments for lo range, hi range and freq
-opcode linemod, k,iii
+opcode linemod, k,iii 
 	ilo, ihi, irate xin
-	kmod=linseg(ilo, irate*0.5, ihi, irate*0.5, ilo)
+	kmod=linseg(ilo, irate, ihi, irate, ilo)
 	xout kmod
 endop
 
@@ -116,18 +136,12 @@ opcode pdelay, aa, Skkkk
 	sbus_clear(Schn)
 endop
 
-opcode reverb_mix, 0, aak
-  al, ar, krvb xin
-    sbus_mix(0, al, ar)
-    sbus_mix(1, al * krvb, ar * krvb)
-endop
-
 instr grain
 Sname = p4
 kpitch=linemod(p5,p6,p7)
 kstr=linemod(p8,p9,p10) 
 kdens=linemod(p11,p12,p13)
-kgrsize=linemod(p14,p15,p16)
+kgrsize=1;linemod(p14,p15,p16)
 kamp=0.5
 ichn filenchnls Sname ;get number of channels. if mono then load up chn 1 twice.
 		if ichn = 2 then
