@@ -38,19 +38,25 @@ opcode makeOSC, 0, 0
 	OSCsend kwhen, Shost, iport, Saddress, Stype,Sdata1,Sdata2 
 endop
 
-; triangle LFO. Takes arguments for lo range, hi range and freq
+;  up/down line mod. Takes arguments for lo range, hi range and freq
 opcode linemod, k,iii 
 	ilo, ihi, irate xin
-	kmod=linseg(ilo, irate, ihi, irate, ilo)
+	kmod=linseg(ilo, irate/2, ihi, irate/2, ilo)
 	xout kmod
 endop
-
-
+/*
+; multi-segment modulator 
+opcode segmod, k, iiioooooo
+	ival, itime1, ival1, itime2, ival2, itime3, ival3, itime4, ival4	
+	kline linseg ival, itime1, ival1, itime2, ival2, itime3, ival3, itime4, ival4
+	xout kline
+endop
+*/
 opcode seq, 0, kiSSik[]k[]k[]k[]
 	kamp, ichance, Sprocessor, Sample,idur, kparam1[], kparam2[], kparam3[], kparam4[] xin
 	if (choose(ichance) == 1) then
 		;Sample getSample Sfolder, isample ; get the sample name
-		schedule(Sprocessor, 0, idur, Sample, kparam1[0], kparam1[1], kparam1[2], kparam2[0],kparam2[1],kparam2[2],kparam3[0],kparam3[1],kparam3[2],kparam4[0],kparam4[1],kparam4[2], kamp)
+		schedule(Sprocessor, 0, p3, Sample, kparam1[0], kparam1[1], kparam1[2], kparam2[0],kparam2[1],kparam2[2],kparam3[0],kparam3[1],kparam3[2],kparam4[0],kparam4[1],kparam4[2], kamp)
 	endif
 endop
 
@@ -141,7 +147,7 @@ Sname = p4
 kpitch=linemod(p5,p6,p7)
 kstr=linemod(p8,p9,p10) 
 kdens=linemod(p11,p12,p13)
-kgrsize=1;linemod(p14,p15,p16)
+kgrsize=linemod(p14,p15,p16)
 print p14
 print p15
 kamp=p17
