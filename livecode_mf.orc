@@ -1,6 +1,6 @@
 
+start("ReverbMixer")
 gi1 ftgen 1,0,8192,20,2,1 ;Hanning Window
-
 /** B-Format - Ambisonic encoding options */
 giBformChannels = 16 ;how many channels to encode? 36 is 5th order.
 
@@ -46,11 +46,11 @@ opcode linemod, k,iii
 endop
 
 
-opcode seq, 0, iSSik[]k[]k[]k[]
-	ichance, Sprocessor, Sample,idur, kparam1[], kparam2[], kparam3[], kparam4[] xin
+opcode seq, 0, kiSSik[]k[]k[]k[]
+	kamp, ichance, Sprocessor, Sample,idur, kparam1[], kparam2[], kparam3[], kparam4[] xin
 	if (choose(ichance) == 1) then
 		;Sample getSample Sfolder, isample ; get the sample name
-		schedule(Sprocessor, 0, idur, Sample, kparam1[0], kparam1[1], kparam1[2], kparam2[0],kparam2[1],kparam2[2],kparam3[0],kparam3[1],kparam3[2],kparam4[0],kparam4[1],kparam4[2])
+		schedule(Sprocessor, 0, idur, Sample, kparam1[0], kparam1[1], kparam1[2], kparam2[0],kparam2[1],kparam2[2],kparam3[0],kparam3[1],kparam3[2],kparam4[0],kparam4[1],kparam4[2], kamp)
 	endif
 endop
 
@@ -142,7 +142,9 @@ kpitch=linemod(p5,p6,p7)
 kstr=linemod(p8,p9,p10) 
 kdens=linemod(p11,p12,p13)
 kgrsize=1;linemod(p14,p15,p16)
-kamp=0.5
+print p14
+print p15
+kamp=p17
 ichn filenchnls Sname ;get number of channels. if mono then load up chn 1 twice.
 		if ichn = 2 then
 			iL ftgen 0, 0, 0, 1, Sname, 0, 0, 1
