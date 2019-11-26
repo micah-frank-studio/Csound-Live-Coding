@@ -30,13 +30,13 @@ reverb_mix(al,ar,0.4)
 ;schedule(p1,p3,p3)
 endin
 
-schedule("g1", 0, 60)
-schedule("g2", 0, 60)
+schedule("g1", 0, 20)
+schedule("g2", 0, 20)
 
 instr g2 
 irand = random(1,118) ;iranddur=random(0.2,9)
 irandpitch=random(-2, 4)
-Sample = sound("spire", 7)
+Sample = sound("spire", 3)
 Smachine = "grain"
 idur =p3 
 kamp = 0.4
@@ -44,7 +44,7 @@ ichance = 0.999
 kpitch[] fillarray 0.4,0.45, idur ;maps to trilfo // lo, hi rate.
 kstr[] fillarray 2, 1.2, idur ;2 to 0.01
 kgrd[] fillarray 10, 10, idur ;2 to 32
-kgrs[] fillarray 0.3, 0.1, idur 	;0.1 to 1 
+kgrs[] fillarray 0.9, 0.9, idur 	;0.1 to 1 
 seq(kamp, ichance, Smachine, Sample,idur,kpitch,kstr,kgrd,kgrs)
 prints "Sample: %i %s Number: %i \n", p1, Sample,irand
 ;render("grain")

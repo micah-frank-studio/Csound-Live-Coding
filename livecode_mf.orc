@@ -115,9 +115,8 @@ opcode render, 0, S
 	sbus_clear(Schn)
 endop
 
-opcode pdelay, aa, Skkkk 
-	Schn, kdelay, kfeedback, kfbpshift, kmix xin
-	al, ar sbus_get Schn
+opcode pdelay, aa, aakkkk 
+	al,ar, kdelay, kfeedback, kfbpshift, kmix xin
 	imaxdelay = 3; seconds
 	alfoL lfo 0.05, 0.2 ; slightly mod the left delay time
 	abuf1		delayr	imaxdelay
@@ -138,8 +137,6 @@ opcode pdelay, aa, Skkkk
 	amixL=ntrpol(al, atpsL, kmix)
 	amixR=ntrpol(ar, atpsR, kmix)
 	xout amixL, amixR 
-	;outs(amixL, amixR)
-	sbus_clear(Schn)
 endop
 
 instr grain
@@ -148,7 +145,7 @@ kpitch=linemod(p5,p6,p7)
 kstr=linemod(p8,p9,p10) 
 kdens=linemod(p11,p12,p13)
 kgrsize=linemod(p14,p15,p16)
-print p14
+print p7
 print p15
 kamp=p17
 ichn filenchnls Sname ;get number of channels. if mono then load up chn 1 twice.
