@@ -139,6 +139,14 @@ opcode pdelay, aa, aakkkk
 	xout amixL, amixR 
 endop
 
+opcode threepole, aa,aakkk
+	al, ar, kcf, kres, kdist xin
+	afl lpf18 al,kcf, kres, kdist
+	afr lpf18 ar,kcf, kres, kdist
+xout afl, afr
+endop
+	
+
 instr grain
 Sname = p4
 kpitch=linemod(p5,p6,p7)

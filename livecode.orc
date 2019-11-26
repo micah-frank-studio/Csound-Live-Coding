@@ -1,6 +1,8 @@
 /*
   Live Coding Functions
   Author: Steven Yi
+
+	Version edited by Micah Frank
 */ 
 
 instr S1
@@ -1140,6 +1142,7 @@ endop
 ;; MIXER
 
 gi_reverb_mixer_on init 0
+gi_render init 0
 
 /** Always-on Mixer instrument with Reverb send channel. Use start("ReverbMixer") to run. Designed 
     for use with pan_verb_mix to simplify signal-based live coding. */
@@ -1157,9 +1160,18 @@ instr ReverbMixer
   
   a1 = tanh(a1 + al) * kamp
   a2 = tanh(a2 + ar) * kamp
+ aoutL limit a1, -0.9, 0.9 
+ aoutR limit a2, -0.9, 0.9 
+  out(aoutL, aoutR)
   
-  out(a1, a2)
-  
+if gi_render == 1 then
+	allL, allR monitor
+	Sdate dates
+	Sdir = "renders/"
+	Sfilename strcat Sdir,Sdate
+	Sfilename strcat  Sfilename, ".wav"  
+	fout Sfilename, 24, allL, allR ; create 24-bit .wav file in specified directory
+	endif
   sbus_clear(0)
   sbus_clear(1)
 endin
