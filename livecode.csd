@@ -22,7 +22,7 @@ nchnls	=	2
 
 #include "livecode.orc"
 #include "livecode_mf.orc"
-
+#include "ambisonics_udos.txt"
 
 </CsInstruments>
 </CsoundSynthesizer>

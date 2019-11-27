@@ -141,38 +141,10 @@ endop
 
 opcode threepole, aa,aakkk
 	al, ar, kcf, kres, kdist xin
+	kcf limit kcf, 10,16000 
+	kres limit kres, 0.001, 0.999
 	afl lpf18 al,kcf, kres, kdist
 	afr lpf18 ar,kcf, kres, kdist
 xout afl, afr
 endop
 	
-
-instr grain
-Sname = p4
-kpitch=linemod(p5,p6,p7)
-kstr=linemod(p8,p9,p10) 
-kdens=linemod(p11,p12,p13)
-kgrsize=linemod(p14,p15,p16)
-print p7
-print p15
-kamp=p17
-ichn filenchnls Sname ;get number of channels. if mono then load up chn 1 twice.
-		if ichn = 2 then
-			iL ftgen 0, 0, 0, 1, Sname, 0, 0, 1
-			iR ftgen 0, 0, 0, 1, Sname, 0, 0, 2
-		;	prints "is stereo \n"
-		else 
-			iL ftgen 0, 0, 0, 1, Sname, 0, 0, 1	
-			iR ftgen 0, 0, 0, 1, Sname, 0, 0, 1
-		endif
-iolaps = 2
-ips     = 1/iolaps
-	a1L syncloop kamp, kdens, kpitch, kgrsize, ips*kstr, 0, ftlen(iL)/sr, iL, 1, iolaps
-	a1R syncloop kamp, kdens, kpitch, kgrsize, ips*kstr, 0, ftlen(iR)/sr, iR, 1, iolaps
-;outs(a1L, a1R)
-;sbus_mix("grain", a1L, a1R)
-busmix("grain", a1L, a1R)
-endin
-
-
-

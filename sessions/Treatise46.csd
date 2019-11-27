@@ -2,16 +2,20 @@
 *** LARUM ENSEMBLE ***
 
 VARIATIONS ON CORNELIUS CARDEW'S "TREATISE"
-CODE BY MICAH FRANK
+PREPARED PIANO : JACOB SACKS
+SAXOPHONE : CHET DOXAS
+LIVE CODE : MICAH FRANK
 
 giBEncode = 1 ;Render B-format alongside stereo render? (1 = yes, 0 = no)
 gi_render = 1
 
+schedule("thepast", 0, 300, 19) ;17, 19, 26, 27, 28
 schedule("thepast", 0, 55, 26) ;17, 19, 26, 27, 28
 schedule("forest", 0, 60)
 schedule("elemental", 0, 60)
 schedule("spindle", 0, 30, 11) ;11,21,22,23
-schedule("earth", 0, 51)
+schedule("earth", 0, 50)
+schedule("cone", 0, 0.01)
 schedule(100, 0, 300)
 
 instr forest 
@@ -96,7 +100,7 @@ instr earth
 	iampsus =random(0.1,0.3) 
 	iramp = p3*0.1
 	kamp=linseg(0, iramp, iampsus, p3-iramp*2, iampsus, iramp, 0)
-	irand=random(0.01, 50)
+	irand=random(0.01, 10)
 	irand2=random(0.01,20)
 	kmod = linseg(irand, p3, irand2) ;create random modulator for VCO freq
 	ipw =random(0.05, 0.93)
@@ -109,15 +113,44 @@ instr earth
 ;	schedule(p1,p3,p3)
 endin
 
+
+instr cone 
+	if sometimes(0.8, 1, 0) == 1 then
+	iampsus =random(0.6,0.3) 
+	iranddur=random(0.01, 2.7)
+	kamp=expseg(iampsus, p3*iranddur, 0.001)
+	irand=random(40, 170)
+	ilambda=exprand(400)
+	irand2=10+ilambda
+	kmod = irand2 ;linseg(irand, p3*0.5, irand2) ;create random modulator for VCO freq
+	ipw =random(0.05, 0.93)
+	amodfreq =vco2(kamp, kmod,4,ipw) 
+	kfreq=100+(exprand(300))
+	avco vco2 kamp, kfreq, 12
+	asig=avco*amodfreq
+	kdelay=random(0.11, 3)
+	kfb=0.6
+	kdpitch init 1
+	kdpitch+=lfo(0.01,20)
+	kdelmix=0.2
+	adelL, adelR pdelay asig,asig,kdelay,kfb,kdpitch,kdelmix
+	kfiltmod=line(5000, p3, 500)
+	kres = 0.5
+	afiltL, afiltR threepole adelL, adelR, kfiltmod, kres, 0.2
+	al, ar declickst afiltL, afiltR
+	reverb_mix(al, al, 0.8)
+endif
+	schedule(p1,p3,p3)
+endin
 instr thepast
 	Sample = sound("soundbits", p4)
 iampsus = 0.2
 	iramp = p3*0.1
 	kamp=linseg(0, iramp, iampsus, p3-iramp*2, iampsus, iramp, 0)
-kfreq=linseg(10, p3, 30)
+kfreq=linseg(20, p3, 30)
 kpitch = 0.5;linseg(2.2, p3*0.33, 2.2, p3*0.56, 0.1)
 kgrsize=0.1
-kprate=1.2;random(-1, 3)
+kprate=1.0;random(-1, 3)
 ifun = gi1
 iolaps = 2
 agrainL, agrainR diskgrain Sample, kamp, kfreq, kpitch, kgrsize, kprate, ifun, iolaps
