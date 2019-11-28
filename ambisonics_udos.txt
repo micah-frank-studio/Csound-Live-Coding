@@ -1161,6 +1161,7 @@ zar(7),zar(8),zar(9),zar(10),zar(11),zar(12),zar(13),zar(14),zar(15),zar(16),zar
 	fout	Sname,iformat,zar(0),zar(1),zar(2),zar(3),zar(4),zar(5),zar(6),
 zar(7),zar(8),zar(9),zar(10),zar(11),zar(12),zar(13),zar(14),zar(15),zar(16),zar(17),zar(18),zar(19),zar(20),zar(21),zar(22),zar(23),zar(24),zar(25),zar(26),zar(27),zar(28),zar(29),zar(30),zar(31),zar(32),zar(33),zar(34),zar(35),zar(36),zar(37),zar(38),zar(39),zar(40),zar(41),zar(42),zar(43),zar(44),zar(45),zar(46),zar(47),zar(48),zar(49),zar(50),zar(51),zar(52),zar(53),zar(54),zar(55),zar(56),zar(57),zar(58),zar(59),zar(60),zar(61),zar(62),zar(63),zar(64),zar(65),zar(66),zar(67),zar(68),zar(69),zar(70),zar(71),zar(72),zar(73),zar(74),zar(75),zar(76),zar(77),zar(78),zar(79),zar(80)
 	endif
+xout 0
 endop
 
 ;;;;;;;;;;;

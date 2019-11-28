@@ -15,8 +15,8 @@ schedule("forest", 0, 60)
 schedule("elemental", 0, 60)
 schedule("spindle", 0, 30, 11) ;11,21,22,23
 schedule("earth", 0, 50)
-schedule("cone", 0, 0.01)
-schedule(100, 0, 300)
+schedule("cone", 0, 0.01) 
+schedule(100, 0, 60)
 
 instr forest 
 Sample = sound("field", 3)
@@ -35,9 +35,10 @@ kfb=0.4
 kdpitch=linseg(1,p3,0.5)
 kdelmix=0.4
 adelL, adelR pdelay afiltL,afiltR,kdelay,kfb,kdpitch,kdelmix
-kalpha line 0, p3, 720
-kbeta randh 100, 2
-;mixencoded(adelL, adelR, kalpha, kbeta)
+kazim=line(0, p3, 2*360)
+kalt=20
+kdist=line(2,p3,0)
+kout ambi_enc_dist adelL, giorder, kazim,kalt,kdist
 al, ar declickst adelL, adelR
 reverb_mix(al,ar,0.4)
 ;schedule(p1,p3,p3)
@@ -110,6 +111,10 @@ instr earth
 	asig=avco*amodfreq
 	al declick asig
 	reverb_mix(al, al, 0.8)
+	kazim=line(200, p3, 1.5*360)
+	kalt=20
+	kdist=line(0.5,p3,1)
+	kout ambi_enc_dist al, giorder, kazim,kalt,kdist
 ;	schedule(p1,p3,p3)
 endin
 
@@ -138,6 +143,10 @@ instr cone
 	kres = 0.5
 	afiltL, afiltR threepole adelL, adelR, kfiltmod, kres, 0.2
 	al, ar declickst afiltL, afiltR
+	kazim=line(200, p3, 1.5*360)
+	kalt=20
+	kdist=line(0.2,p3,1)
+	kout ambi_enc_dist al, giorder, kazim,kalt,kdist
 	reverb_mix(al, al, 0.8)
 endif
 	schedule(p1,p3,p3)
@@ -167,4 +176,6 @@ allL, allR monitor
 	Sfilename strcat Sdir,Sdate
 	Sfilename strcat  Sfilename, ".wav"  
 	fout Sfilename, 24, allL, allR ; create 24-bit .wav file in specified directory
+	k0 ambi_write_B "B_form.wav",giorder,24
+	zacl 0,gisizea-1 
 endin

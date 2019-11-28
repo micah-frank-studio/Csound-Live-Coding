@@ -1,15 +1,19 @@
 
 start("ReverbMixer")
 gi1 ftgen 1,0,8192,20,2,1 ;Hanning Window
-/** B-Format - Ambisonic encoding options */
-giBformChannels = 16 ;how many channels to encode? 36 is 5th order.
+/** B-Format - Ambisonic encoding options */ 
+giorder = 5
+gisizea = (giorder+1)^2
+zakinit gisizea, 1    ;(isizea = (order + 1)^2)  /* higher  order encoder */
 
+/* built in Csound 3rd order encoder */
+/*
 opcode mixencoded, 0, aakk
-	ainL, ainR, kalpha, kbeta xin
+	ainL, ainR, kazimuth, kelev xin
 	imixchn init 0 
-	abenc[] init giBformChannels
-	abenc bformenc1 ainL, kalpha, kbeta
-	if imixchn<=giBformChannels then	
+	abenc[] init gisizea
+	abenc bformenc1 ainL, kazimuth, kelev
+	if imixchn<=gisizea then	
 	Smxchn strcat "benc", S(imixchn)
 	chnmix abenc[imixchn], Smxchn
 	imixchn+=1
@@ -20,7 +24,7 @@ opcode mixencoded, 0, aakk
 	aDecode  bformdec1 1, abenc
 	outs(aDecode[0], aDecode[1])
 endop
-
+*/
 opcode declickst, aa, aa
 ainL, ainR     xin
 aenv    linseg 0, 0.02, 1, p3 - 0.05, 1, 0.02, 0, 0.01, 0
