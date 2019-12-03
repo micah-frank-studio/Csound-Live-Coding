@@ -20,9 +20,8 @@ ksmps	=	64
 nchnls	=	2
 0dbfs	=	1
 
-#include "livecode.orc"
-#include "livecode_mf.orc"
 #include "ambisonics_udos.txt"
+#include "livecode_mf.orc"
 
 </CsInstruments>
 </CsoundSynthesizer>

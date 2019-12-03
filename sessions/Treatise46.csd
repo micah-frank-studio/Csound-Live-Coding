@@ -6,17 +6,16 @@ PREPARED PIANO : JACOB SACKS
 SAXOPHONE : CHET DOXAS
 LIVE CODE : MICAH FRANK
 
-giBEncode = 1 ;Render B-format alongside stereo render? (1 = yes, 0 = no)
-gi_render = 1
-
+monitorMode 0 	;0 = stereo, 1 = ambisonic
 schedule("thepast", 0, 300, 19) ;17, 19, 26, 27, 28
 schedule("thepast", 0, 55, 26) ;17, 19, 26, 27, 28
-schedule("forest", 0, 60)
+schedule("forest", 0,10 )
 schedule("elemental", 0, 60)
 schedule("spindle", 0, 30, 11) ;11,21,22,23
 schedule("earth", 0, 50)
 schedule("cone", 0, 0.01) 
-schedule(100, 0, 60)
+start("stereoRender") 		;render stereo file
+start("ambiRender")		;render B-format file
 
 instr forest 
 Sample = sound("field", 3)
@@ -36,11 +35,12 @@ kdpitch=linseg(1,p3,0.5)
 kdelmix=0.4
 adelL, adelR pdelay afiltL,afiltR,kdelay,kfb,kdpitch,kdelmix
 kazim=line(0, p3, 2*360)
-kalt=20
-kdist=line(2,p3,0)
+kalt=0
+kdist=1;line(1,p3,0.5)
 kout ambi_enc_dist adelL, giorder, kazim,kalt,kdist
 al, ar declickst adelL, adelR
-reverb_mix(al,ar,0.4)
+sbus_mix "master", al, ar
+effect_mix "verbmix", al, ar, 0.6
 ;schedule(p1,p3,p3)
 endin
 
@@ -111,8 +111,8 @@ instr earth
 	asig=avco*amodfreq
 	al declick asig
 	reverb_mix(al, al, 0.8)
-	kazim=line(200, p3, 1.5*360)
-	kalt=20
+	kazim=line(0, p3, 4*360)
+	kalt=lfo(40, 0.5)
 	kdist=line(0.5,p3,1)
 	kout ambi_enc_dist al, giorder, kazim,kalt,kdist
 ;	schedule(p1,p3,p3)
@@ -149,7 +149,7 @@ instr cone
 	kout ambi_enc_dist al, giorder, kazim,kalt,kdist
 	reverb_mix(al, al, 0.8)
 endif
-	schedule(p1,p3,p3)
+;	schedule(p1,p3,p3)
 endin
 instr thepast
 	Sample = sound("soundbits", p4)
@@ -169,13 +169,3 @@ reverb_mix(al,ar,0.7)
 ;schedule(p1, p3, p3)
 endin
 
-instr 100
-allL, allR monitor
-	Sdate dates
-	Sdir = "renders/"
-	Sfilename strcat Sdir,Sdate
-	Sfilename strcat  Sfilename, ".wav"  
-	fout Sfilename, 24, allL, allR ; create 24-bit .wav file in specified directory
-	k0 ambi_write_B "B_form.wav",giorder,24
-	zacl 0,gisizea-1 
-endin

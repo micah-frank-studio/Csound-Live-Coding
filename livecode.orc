@@ -4,6 +4,9 @@
 
 	Version edited by Micah Frank
 */ 
+   
+
+gi2 ftgen 2,0,64,-2,1,45,0,45,-5,0,0,0,0,0,0,0
 
 instr S1
   ifreq = p4
@@ -1140,6 +1143,25 @@ opcode sbus_read, aa, i
 endop
 
 ;; MIXER
+giBEncode init 1
+giBrecord init 0
+gi_render init 0
+giorder init 5
+gisizea init 1
+opcode masterSwitch, 0, aa
+	ainL, ainR xin
+	if giBEncode==1 then
+		aoutL, aoutR ambi_decode giorder, gi2 ;  stereo decoding
+		if giBrecord==1 then
+			k0 ambi_write_B "B_form.wav",giorder,24
+		endif
+	else
+		aoutL = ainL
+		aoutR = ainR	 
+	endif
+	outs aoutL, aoutR
+		zacl 0, gisizea-1
+endop
 
 gi_reverb_mixer_on init 0
 gi_render init 0
@@ -1149,7 +1171,6 @@ gi_render init 0
 instr ReverbMixer
 
   gi_reverb_mixer_on init 1
-
   ;; dry and reverb send signals
   a1, a2 sbus_read 0
   a3, a4 sbus_read 1
@@ -1160,18 +1181,16 @@ instr ReverbMixer
   
   a1 = tanh(a1 + al) * kamp
   a2 = tanh(a2 + ar) * kamp
- aoutL limit a1, -0.9, 0.9 
- aoutR limit a2, -0.9, 0.9 
-  out(aoutL, aoutR)
   
-if gi_render == 1 then
-	allL, allR monitor
-	Sdate dates
-	Sdir = "renders/"
-	Sfilename strcat Sdir,Sdate
-	Sfilename strcat  Sfilename, ".wav"  
-	fout Sfilename, 24, allL, allR ; create 24-bit .wav file in specified directory
-	endif
+	iazimL = 270 
+	iazimR = 90
+	idist = 1
+	kout ambi_enc_dist al, giorder, iazimL, 0, idist ;encode reverb to 2 channels (what is distance unit?
+	kout ambi_enc_dist ar, giorder, iazimR, 0, idist 
+ 	aoutL limit a1, -0.9, 0.9 
+	aoutR limit a2, -0.9, 0.9 
+;	outs(aoutL, aoutR)
+	masterSwitch  aoutL, aoutR
   sbus_clear(0)
   sbus_clear(1)
 endin
