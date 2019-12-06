@@ -20,6 +20,7 @@ ksmps	=	64
 nchnls	=	2
 0dbfs	=	1
 
+#include "AEP_udos.txt"
 #include "ambisonics_udos.txt"
 #include "livecode_mf.orc"
 

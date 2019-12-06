@@ -1,7 +1,6 @@
-
+seed 0
 gi1 ftgen 1,0,8192,20,2,1 ;Hanning Window
-gi2 ftgen 2,0,64,-2,1,45,0,45,-5,0,0,0,0,0,0,0
-
+gi2 ftgen 2,0,64,-2,0,-90,0,90,0,0,0,0,0;f ifn  0  n  -2 p1 az1 el1 az2 el2 ... (n is a power of 2 greater than 3·number_of_spekers + 1) (p1 is not used)
 gkmonitorMode init 0
 /** B-Format - Ambisonic encoding options */ 
 giorder = 5
@@ -33,6 +32,11 @@ aenv    linseg 0, 0.02, 1, p3 - 0.05, 1, 0.02, 0, 0.01, 0
         xout ainL * aenv, ainR * aenv         ; apply envelope and write output
         endop
 
+opcode declick, a, a
+ain      xin
+aenv    linseg 0, 0.02, 1, p3 - 0.05, 1, 0.02, 0, 0.01, 0
+        xout ain * aenv         ; apply envelope and write output
+        endop
 opcode makeOSC, 0, 0
 	kwhen = 1
 	Shost = ""
@@ -196,6 +200,16 @@ opcode threepole, aa,aakkk
 	afr lpf18 ar,kcf, kres, kdist
 	xout afl, afr
 endop
+
+opcode swarm, 0,Skkkkkk
+    Sample,ksection,ksizemin,ksizemax,kdensity,kprox,kmotion xin
+    ktrig metro kdensity
+    kmotionlfo=abs(randi(1,kmotion))	
+  	kproxout expcurve kprox, 2
+    kprox=scale(kprox,20000,200)
+    Scorestring  sprintfk {{i "%s" 0 0.5 "%s" %f %f %f %f %f}}, "swarmSched", Sample, ksection,ksizemin,ksizemax,kprox,kmotionlfo
+                scoreline Scorestring,ktrig
+endop
 	
 instr reverb
 	ainL, ainR sbus_get "verbmix"
@@ -203,7 +217,7 @@ instr reverb
 	kfc=5000
 	aRevL,aRevR reverbsc ainL, ainR, kfblvl, kfc
 	sbus_mix "master", aRevL, aRevR
-	iazimL = 270 
+	iazimL = -90 
 	iazimR = 90
 	idist = 1
 	kout ambi_enc_dist aRevL, giorder, iazimL, 0, idist ;encode reverb to 2 channels (what is distance unit?
@@ -230,7 +244,18 @@ instr ambiMonitor
 endin
 instr ambiRender
 	k0 ambi_write_B "B_form.wav",giorder,24
-	zacl 0, gisizea-1
+;	zacl 0, gisizea-1
+endin
+
+instr swarmSched
+	asigL, asigR diskin p4,1,p5 
+	idecay=random(p6,p7)
+	kenv=expseg(0.001,0.03,0.5,idecay,0.001)
+	kcf=p8
+	kpan=p9
+    afilt moogladder asigL+asigR, kcf, 0.01
+    al, ar pan2 afilt, kpan 
+    sbus_mix "swarm", al*kenv, ar*kenv
 endin
 
 opcode  monitorMode, 0, i
