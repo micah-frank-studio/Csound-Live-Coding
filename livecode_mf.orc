@@ -37,15 +37,16 @@ ain      xin
 aenv    linseg 0, 0.02, 1, p3 - 0.05, 1, 0.02, 0, 0.01, 0
         xout ain * aenv         ; apply envelope and write output
         endop
-opcode makeOSC, 0, 0
+opcode makeOSC, 0, SS
+	Sval1, Sval2 xin
 	kwhen = 1
 	Shost = ""
+	Sval1="forest"
+	Sval2="none"
 	iport = 3333
 	Saddress = "/play2" 
 	Stype = "ss"  ; "bcdfilmst" which stand for Boolean, character, double, float, 32-bit integer, 64-bit integer, MIDI, string and timestamp.
-	Sdata1 = "stone" 
-	Sdata2 = "glass" 
-	OSCsend kwhen, Shost, iport, Saddress, Stype,Sdata1,Sdata2 
+	OSCsend kwhen, Shost, iport, Saddress, Stype,Sval1,Sval2
 endop
 /*
 ;  up/down line mod. Takes arguments for lo range, hi range and freq
@@ -150,6 +151,14 @@ opcode effect_mix, 0,Saak
 	chnmix ar*kamount, Sbusr
 endop
 
+opcode sbus_set,0,Saa
+  Sbus, al, ar xin
+	Sbusl strcat Sbus, "l"
+	Sbusr strcat Sbus, "r"
+	chnset al,Sbusl
+	chnset ar,Sbusr
+endop
+
 opcode sbus_get,aa,S
   Sbus xin
 	Sbusl strcat Sbus, "l"
@@ -213,11 +222,11 @@ endop
 	
 instr reverb
 	ainL, ainR sbus_get "verbmix"
-	kfblvl=0.6
-	kfc=5000
-	aRevL,aRevR reverbsc ainL, ainR, kfblvl, kfc
+	kfblvl=0.8
+	kfc=0.3
+	aRevL,aRevR freeverb ainL, ainR, kfblvl, kfc
 	sbus_mix "master", aRevL, aRevR
-	iazimL = -90 
+	iazimL = -90
 	iazimR = 90
 	idist = 1
 	kout ambi_enc_dist aRevL, giorder, iazimL, 0, idist ;encode reverb to 2 channels (what is distance unit?

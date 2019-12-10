@@ -1,29 +1,22 @@
 
-*** LARUM ENSEMBLE ***
-
-VARIATIONS ON CORNELIUS CARDEW'S "TREATISE"
-PREPARED PIANO : JACOB SACKS
-SAXOPHONE : CHET DOXAS
-LIVE CODE : MICAH FRANK
-
 monitorMode 0 	;0 = stereo, 1 = ambisonic
-kill("thepast")
-schedule("thepast", 0, 15, 26) ;1,3,4,8,24
-schedule("forest", 0,60)
-schedule("elemental", 0, 50, 0) 	;0,1
-schedule("spindle", 0, 60, 30) ;30,21,22,38(raph)
-schedule("earth", 0, 50)
-schedule("cone", 0, 0.55) 
-schedule("theSwarm",0,60,3)	;3, 
+kill("theSwarm")
+schedule("thepast", 0, 100, 8) 
+schedule("forest", 0,90,0) ;0,3
+schedule("elemental", 0, 200, 3) 	;1
+schedule("spindle", 0, 100, 19, 0.1) ;30,21,22,38(raph) p5=pitch
+schedule("earth", 0, 60, 275)	;p4=freq
+schedule("cone", 0, 1.05) 
+schedule("theSwarm",0,135,5)	;1,4,5
 
-schedule("ambiRender",0,170)
+schedule("ambiRender",0,300)
 start("stereoRender") 		;render stereo file
 
 instr forest 
-	Sample = sound("field", 3)
+	Sample = sound("field", p3)
 	isusamp=0.2 ; max sustain volume
 	kamp =linseg(0,1,0.2,p3-(p3*0.1-1),isusamp,p3*0.1-1,0) 
-	kpitch=linseg(0.2,p3*0.5,0.7,p3*0.5,-0.2)
+	kpitch=linseg(0.9,p3*0.5,0.7,p3*0.5,-0.9)
 	kstr=linseg(3.1, p3*0.5, 2, p3*0.5, 1)
 	kdens=20
 	kgrsize=0.3
@@ -37,7 +30,7 @@ instr forest
 	kdelmix=0.4
 	adelL, adelR pdelay afiltL,afiltR,kdelay,kfb,kdpitch,kdelmix
 	kazim=line(0, p3, 3*360)
-	kalt=0
+	kalt=gauss(10)
 	kdist=1;line(1,p3,0.5)
 	kout ambi_enc_dist adelL, giorder, kazim,kalt,kdist
 	al, ar declickst adelL, adelR
@@ -50,14 +43,14 @@ endin
 instr elemental
 	irand = random(1,118) ;iranddur=random(0.2,9)
 	irandpitch=random(-2, 4)
-	Sample = sound("ton\e", p4)
+	Sample = sound("tone", p4)
 	Smachine = "grain"
 	idur =p3 
 	iampsus = 0.2	
 	iramp = p3*0.1
 	kamp=linseg(0, iramp, iampsus, p3-iramp*2, iampsus, iramp, 0)
-	kpitch=1 ;linseg(0.9,p3,0.3)
-	kstr=linseg(2.1, p3*0.5, 1, p3*0.5, 1)
+	kpitch=0.5 ;linseg(0.9,p3,0.3)
+	kstr=1;linseg(2.1, p3*0.5, 1, p3*0.5, 1)
 	kdens=10
 	kgrsize=0.2
 				iL ftgen 0, 0, 0, 1, Sample, 0, 0, 1
@@ -67,30 +60,31 @@ instr elemental
 	ips     = 1/iolaps
 		a1L syncloop kamp, kdens, kpitch, kgrsize, ips*kstr, 0, ftlen(iL)/sr, iL, 1, iolaps
 		a1R syncloop kamp, kdens, kpitch, kgrsize, ips*kstr, 0, ftlen(iR)/sr, iR, 1, iolaps
-	;busmix("grain2", a1L, a1R)
+	kfiltmod=line(4000, p3, 100)
+	afiltL, afiltR threepole a1L, a1R, kfiltmod, 0.1, 0.2
 	kdelay=0.4
 	kfb=0.4
 	kdpitch=linseg(1,idur, 0.5)
 	kdelmix=0.4
-	adelL, adelR pdelay a1L,a1R,kdelay,kfb,kdpitch,kdelmix
+;	adelL, adelR pdelay afiltL,afiltR,kdelay,kfb,kdpitch,kdelmix
 	krandclock=(randh(abs(1.4),1)+1) 
 	kazim=randi(gauss(90),krandclock,0)
 	kalt=linseg(0,p3*0.5,90,p3*0.5, 0);randh(10, 2)
 	kdist=2;linseg(0,p3*0.5,100,p3*0.5,0)
-	al, ar declickst adelL, adelR
+	al, ar declickst afiltL, afiltR
 	kout ambi_enc_dist al+ar, giorder, kazim,kalt,kdist
 	sbus_mix "master", al, ar
-	effect_mix "verbmix", al, ar, 0.4
+	effect_mix "verbmix", al, ar, 0.6
 ;schedule(p1,p3,p3)
 endin
 
 instr spindle
-	Sample = sound("soundbits", p4)
+	Sample = sound("binbits", p4)
 	iampsus = 0.2
 	iramp = p3*0.1
 	kamp=linseg(0, iramp, iampsus, p3-iramp*2, iampsus, iramp, 0)
 	kfreq=linseg(10,p3*0.33,30,p3*0.66,10)
-	kpitch = linseg(0.2, p3*0.33, 2.2, p3*0.56, 0.01)
+	kpitch =p5; linseg(0.2, p3*0.33, 2.2, p3*0.56, 0.01)
 	kgrsize=0.3
 	kprate=randi(3,3)+0.1
 	ifun = gi1
@@ -101,7 +95,7 @@ instr spindle
 	kazim=gauss(20)+kmove
 	kalt=abs(randi(10,3))
 	kdist=1
-	kverbmix=linseg(0.11, p3*0.5, 0.99, 73*0.5, 0.31)
+	kverbmix=0.9;linseg(0.11, p3*0.5, 0.99, 73*0.5, 0.31)
 	kout ambi_enc_dist al+ar, giorder, kazim,kalt,kdist
 	sbus_mix "master", al, ar
 	effect_mix "verbmix", al, ar,kverbmix 
@@ -110,16 +104,16 @@ instr spindle
 endin
 
 instr earth
-	iampsus =0.3;random(0.2,0.5) 
+	iampsus =random(0.2,0.5) 
 	iramp = p3*0.1
 	kamp=linseg(0, iramp, iampsus, p3-iramp*2, iampsus, iramp, 0)
-	irand=random(0.01, 10)
-	irand2=random(0.01,20)
-	kmod = linseg(irand, p3, irand2) ;create random modulator for VCO freq
+	irand=random(0.01, 40)
+	irand2=random(0.01,0.1)
+	kmod = irand2 ;linseg(irand, p3, irand2) ;create random modulator for VCO freq
 	ipw =random(0.05, 0.93)
 	amodfreq =vco2(kamp, kmod,4,ipw) 
-	kfreq=random(90, 320)
-	avco vco2 kamp, kfreq, 12
+	kfreq=random(190, 220)
+	avco vco2 kamp*0.4, p4, 12
 	asig=avco*amodfreq
 	al declick asig
 	sbus_mix "master", al, al
@@ -150,7 +144,7 @@ instr cone
 	kfb=0.6
 	kdpitch init 1
 	kdpitch+=lfo(0.01,20)
-	kdelmix=0.2
+	kdelmix=0.6
 	adelL, adelR pdelay asig,asig,kdelay,kfb,kdpitch,kdelmix
 	kfiltmod=line(5000, p3, 500)
 	kres = 0.5
@@ -166,17 +160,22 @@ endif
 ;	schedule(p1,p3,p3)
 endin
 instr thepast
-	Sample = sound("soundbits", p4)
+	Sample = sound("tapes", p4)
 	iampsus = 0.3
 	iramp = p3*0.1
 	kamp=linseg(0, iramp, iampsus, p3-iramp*2, iampsus, iramp, 0)
 	kfreq=linseg(20, p3, 30)
-	kpitch = 0.2;linseg(2.2, p3*0.33, 2.2, p3*0.56, 0.1)
+	kpitch = 0.5;linseg(2.2, p3*0.33, 2.2, p3*0.56, 0.1)
 	kgrsize=0.1
-	kprate=1.0;random(-1, 3)
+	kprate=random(-1, 3)
 	ifun = gi1
 	iolaps = 2
 	agrainL, agrainR diskgrain Sample, kamp, kfreq, kpitch, kgrsize, kprate, ifun, iolaps
+	kdelay= 0.5
+	kfb = 0.3
+	kdpitch=linseg(0.1, p3*0.5, 0.3, p3*0.5, 0.1)
+	kdelmix=0.5
+	adelL, adelR pdelay agrainL, agrainR, kdelay, kfb, kdpitch, kdelmix
 	al, ar declickst agrainL, agrainR
 	kazim=randi(90,0.2);line(200, p3, 1.5*360)
 	kalt=gauss(50)
@@ -189,7 +188,7 @@ instr thepast
 endin
 
 instr theSwarm
-	Sample = sound("tapes",p4)
+	Sample = sound("tone",p4)
 	idur = 0.5 ; duration of the swarm
 	ksection =abs(rand(3,2)) ; offset seconds. Trick: make range longer than file length to create gaps
 	ksizemin = 0.1 ;min size of each member of the swarm
@@ -200,12 +199,17 @@ instr theSwarm
 	kmotion = 0.04;abs(randh(0.7,0.01,2)) ; how fast does the swarm move around (in hz)
 	swarm Sample,ksection,ksizemin,ksizemax,kdensity,kprox,kmotion
 	asL, asR sbus_get "swarm"
-	kazim=lfo(90,1/(p3*0.33))
+	kazim=lfo(360,1/(p3*0.33))
+	kdelay = 0.2
+	kfb=0.4
+	kdpitch = 2
+	kdelmix=0.8
+	adelL, adelR pdelay asL, asR,kdelay,kfb,kdpitch,kdelmix
 	kalt=gauss(30)
 	kdist=1
-	kout ambi_enc_dist asL+asR, giorder, kazim,kalt,kdist
-	sbus_mix "master", asL,asR
-	effect_mix "verbmix", asL, asR, 0.8
+	kout ambi_enc_dist adelL+adelR, giorder, kazim,kalt,kdist
+	sbus_mix "master",adelL, adelR 
+	effect_mix "verbmix", adelL, adelR,0.9
 	sbus_clear "swarm"
 endin
 
@@ -226,5 +230,4 @@ instr monster1
 	effect_mix "verbmix", ainL, ainR, 0.8
 	sbus_clear("radrainbow")
 endin
-start("monster1",0,1)
 
