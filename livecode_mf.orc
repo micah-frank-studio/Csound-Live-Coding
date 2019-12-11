@@ -37,16 +37,16 @@ ain      xin
 aenv    linseg 0, 0.02, 1, p3 - 0.05, 1, 0.02, 0, 0.01, 0
         xout ain * aenv         ; apply envelope and write output
         endop
-opcode makeOSC, 0, SS
-	Sval1, Sval2 xin
+opcode makeOSC, 0, Sk
+	Sval1, kval xin
 	kwhen = 1
 	Shost = ""
-	Sval1="forest"
-	Sval2="none"
+	;Sval1="forest"
+;	kval=1
 	iport = 3333
 	Saddress = "/play2" 
-	Stype = "ss"  ; "bcdfilmst" which stand for Boolean, character, double, float, 32-bit integer, 64-bit integer, MIDI, string and timestamp.
-	OSCsend kwhen, Shost, iport, Saddress, Stype,Sval1,Sval2
+	Stype = "sd"  ; "bcdfilmst" which stand for Boolean, character, double, float, 32-bit integer, 64-bit integer, MIDI, string and timestamp.
+	OSCsend kwhen, Shost, iport, Saddress, Stype,Sval1,kval
 endop
 /*
 ;  up/down line mod. Takes arguments for lo range, hi range and freq
