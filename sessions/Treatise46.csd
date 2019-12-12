@@ -7,14 +7,14 @@ SAXOPHONE : CHET DOXAS
 LIVE CODE : MICAH FRANK
 
 monitorMode 0 	;0 = stereo, 1 = ambisonic
-kill("thepast")
-schedule("thepast", 0, 15, 26) ;1,3,4,8,24
+kill("theSwarm")
+schedule("thepast", 0, 150, 21) ;1,3,4,8,24
 schedule("forest", 0,60)
 schedule("elemental", 0, 50, 0) 	;0,1
-schedule("spindle", 0, 60, 30) ;30,21,22,38(raph)
+schedule("spindle", 0, 65, 19) ;30,21,22,38(raph)
 schedule("earth", 0, 50)
-schedule("cone", 0, 0.55) 
-schedule("theSwarm",0,60,3)	;3, 
+schedule("cone", 0, .15) 
+schedule("theSwarm",0,60,10)	;3, 
 
 schedule("ambiRender",0,170)
 start("stereoRender") 		;render stereo file
@@ -118,7 +118,7 @@ instr earth
 	kmod = linseg(irand, p3, irand2) ;create random modulator for VCO freq
 	ipw =random(0.05, 0.93)
 	amodfreq =vco2(kamp, kmod,4,ipw) 
-	kfreq=random(90, 320)
+	kfreq=random(70, 220)
 	avco vco2 kamp, kfreq, 12
 	asig=avco*amodfreq
 	al declick asig

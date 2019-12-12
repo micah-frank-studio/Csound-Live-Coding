@@ -111,6 +111,8 @@ opcode stop, 0,S
     schedule(-nstrnum(Sinstr), 0, 0)
   endif
 endop
+
+;what's the chance the val will be ival? Otherwise, idefault.
 opcode sometimes,i,iii
 	ichance, ival, idefault xin
 	iout init 0

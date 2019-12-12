@@ -12,12 +12,12 @@ parseTidal = (args) => {
 // address of the OSC message, defined in the file tidal-forward.sc
 // open the console to see the messages, using Ctrl+Alt+I (windows), Cmd+Opt+I (mac), or Ctrl + Shift + I(linux)
 //
-msg.on('/play2', (args) => {
+//msg.on('/play2', (args) => {
 // log osc results to console
  //log(args)
- tidal = parseTidal(args)
+ //tidal = parseTidal(args)
  //console.log(tidal)
-})
+//})
 
 // receive args from supercollider in hydra. Tidal sends OSC messages
 // ahead of the time the sound is plays, so it is necessary to use setTimeout
@@ -25,63 +25,77 @@ msg.on('/play2', (args) => {
 msg.on('/play2', (args) => {
   // parse the values from tidal
  var tidal = parseTidal(args)
-//
-bright = 0.1
-squ = 0.5
   setTimeout(() => {  //
-  // If the tidal sample is "sd", set blend to 0, if it is bd, set blend to 1
-  //
-   //if(tidal.forest === "forest"){
-    //   squ = tidal.forest
-   //} else if (tidal.spindle === "spindle"){
-  //     squ = tidal.spindle
-   //} else if (tidal.earth === "magnesium"){
-    //   squ = tidal.earth
-  //   }
-     //
+       interval = tidal.interval
+       oscScale= tidal.oscScale
+       blendSrc= tidal.blendSrc
   }, tidal.delta * 1000)
+  //console.log(tidal)
   })
 
+//Load images to canvases
+
+  p0 = new P5()
+    // load video
+    vid0 = p0.loadImage(atom.project.getPaths()[0]+'/media/img0.jpg')
+    p0.draw = () => {
+      p0.clear()
+      p0.image(vid0, 0, 2, p0.width, p0.height)
+    }
+  p0.hide()
 p1 = new P5()
   // load video
-  vid1 = p1.loadImage(atom.project.getPaths()[0]+'/media/IMG_6254.jpg')
-  // set video to loop
-  //vid1.loop()
-  // draw to canvas
+  vid1 = p1.loadImage(atom.project.getPaths()[0]+'/media/img1.jpg')
   p1.draw = () => {
     p1.clear()
     p1.image(vid1, 0, 2, p1.width, p1.height)
   }
 p1.hide()
-
 p2 = new P5()
   // load video
-  vid2 = p2.loadImage(atom.project.getPaths()[0]+'/media/IMG_0142.jpg')
-  // set video to loop
-  //vid1.loop()
-  // draw to canvas
+  vid2 = p2.loadImage(atom.project.getPaths()[0]+'/media/img2.jpg')
   p2.draw = () => {
     p2.clear()
     p2.image(vid2, 0, 2, p2.width, p2.height)
   }
 p2.hide()
-
 p3 = new P5()
   // load video
-  vid3 = p3.loadImage(atom.project.getPaths()[0]+'/media/IMG_5113.jpg')
-  // set video to loop
-  //vid1.loop()
-  // draw to canvas
+  vid3 = p3.loadImage(atom.project.getPaths()[0]+'/media/img2.jpg')
   p3.draw = () => {
     p3.clear()
     p3.image(vid3, 0, 2, p3.width, p3.height)
   }
 p3.hide()
+p4 = new P5()
+  // load video
+  vid4 = p4.loadImage(atom.project.getPaths()[0]+'/media/img4.jpg')
+  p4.draw = () => {
+    p4.clear()
+    p4.image(vid4, 0, 2, p4.width, p4.height)
+  }
+p4.hide()
+p5 = new P5()
+  // load video
+  vid5 = p5.loadImage(atom.project.getPaths()[0]+'/media/img5.jpg')
+  p5.draw = () => {
+    p5.clear()
+    p5.image(vid5, 0, 2, p5.width, p5.height)
+  }
+p5.hide()
+p6 = new P5()
+  // load video
+  vid6 = p6.loadImage(atom.project.getPaths()[0]+'/media/img6.jpg')
+  p6.draw = () => {
+    p6.clear()
+    p6.image(vid6, 0, 2, p6.width, p6.height)
+  }
+p6.hide()
 
 // use video within hydra
 redval = Math.sin(time)*.2
 bluval = Math.sin(time)*.4
-s0.init({src: p3.canvas})
+s0.init({src: p1.canvas})
   src(s0)
     .modulatePixelate(osc(0.1,8,10),1000)
     //.modulateRotate(osc(0.2),1,0.01) //multiple, scrollX, speed
@@ -102,8 +116,8 @@ s0.init({src: p3.canvas})
       .modulatePixelate(osc(1,2,1000),1000)
       .out(o0)
 
-s2.init({src: p3.canvas})
-      src(s2)
+    s2.init({src: p4.canvas})
+    src(s2)
           .repeatX(Math.sin(time)*3, 1)
           //.modulateRotate(osc(0.7))
           .saturate(0.1)
@@ -113,17 +127,18 @@ s2.init({src: p3.canvas})
           .modulate(osc([10, 0.2, 1]), 0.2)
           .modulatePixelate(osc(20,0.1,1),100)
           .out(o3)
-blendSrc=o2
+          blendSrc=o1
+          oscScale = 70
+          interval = 600
 //shape([30, 7, 9].fast(9.0)).modulateScale(osc(10)).out(o3)
-interval = 300
-src(blendSrc)
+src(s3)
   .blend(o1, 3, 0.9, 4)
   .add(o3)
   //.modulatePixelate(osc(0.2,0.3,100),700)
   .modulateScale(osc(0.1,3,0),1)
   //.brightness(()=>bright)
   .add(osc(0.3,1,8))
-  .mask(shape([200, 20, 4].fast(0.7)).modulateScale(osc(()=>1)).repeatX(interval*Math.sin(4)))
+  .mask(shape([200, 20, 4].fast(0.7)).modulateScale(osc(()=>oscScale)).repeatX(interval*Math.sin(4)))
 .out(o2)
 
 
