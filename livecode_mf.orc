@@ -45,7 +45,7 @@ opcode makeOSC, 0, Sk
 ;	kval=1
 	iport = 3333
 	Saddress = "/play2" 
-	Stype = "sd"  ; "bcdfilmst" which stand for Boolean, character, double, float, 32-bit integer, 64-bit integer, MIDI, string and timestamp.
+	Stype = "sf"  ; "bcdfilmst" which stand for Boolean, character, double, float, 32-bit integer, 64-bit integer, MIDI, string and timestamp.
 	OSCsend kwhen, Shost, iport, Saddress, Stype,Sval1,kval
 endop
 /*

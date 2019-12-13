@@ -62,7 +62,7 @@ p3.hide()
 
 
 // use video within hydra
-select = 1
+select = 0
 redval = Math.sin(time)*.2
 bluval = Math.sin(time)*.4
 s0.init({src: p0.canvas})
@@ -70,6 +70,7 @@ s1.init({src: p1.canvas})
 s2.init({src: p2.canvas})
 s3.init({src: p3.canvas})
 sources=[s0,s1,s2,s3]
+blendSrc=sources[select]
 
 
   src(o0)
@@ -81,6 +82,7 @@ sources=[s0,s1,s2,s3]
     .out(o1)
   //s1.init({src: p0.canvas})
   src(o1)
+      .blend(s1,3,2,1)
       .repeatX(Math.sin(time)*3, 1)
       //.modulateRotate(osc(0.7))
       //.saturate(10)
@@ -102,15 +104,14 @@ sources=[s0,s1,s2,s3]
           .modulatePixelate(osc(20,0.1,1),100)
           .out(o2)
 //shape([30, 7, 9].fast(9.0)).modulateScale(osc(10)).out(o3)
-    src(o3)
-      blendSrc=sources[()=>select]
-        .blend(blendSrc, 3, 0.9, 4)
+    src(o2)
+        .blend(o1, 3, 0.6, 4)
         .add(o0)
-        //.modulatePixelate(osc(0.2,0.3,100),700)
+        .modulatePixelate(osc(0.2,0.3,100),700)
         .modulateScale(osc(0.1,3,0),1)
         //.brightness(()=>bright)
         .add(osc(0.3,1,8))
-        .mask(shape([200, 20, 4].fast(0.7)).modulateScale(osc(()=>modosc)).repeatX(()=>loop*Math.sin(4)))
+        .mask(shape([200, 20, 4].fast(0.7)).modulateScale(osc(()=>2)).repeatX(()=>loop*Math.sin(4)))
       .out(o3)
 
 render(o3)
