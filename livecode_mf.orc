@@ -39,14 +39,16 @@ aenv    linseg 0, 0.02, 1, p3 - 0.05, 1, 0.02, 0, 0.01, 0
         endop
 opcode makeOSC, 0, Sk
 	Sval1, kval xin
-	kwhen = 1
+	kwhen init 1
 	Shost = ""
-	;Sval1="forest"
-;	kval=1
+	;kval=portk(0.05,kval)
 	iport = 3333
 	Saddress = "/play2" 
 	Stype = "sf"  ; "bcdfilmst" which stand for Boolean, character, double, float, 32-bit integer, 64-bit integer, MIDI, string and timestamp.
 	OSCsend kwhen, Shost, iport, Saddress, Stype,Sval1,kval
+	;ktrig=metro(10)
+	;kwhen=ktrig==1?kwhen+1:kwhen
+;printk 0.2, kwhen
 endop
 /*
 ;  up/down line mod. Takes arguments for lo range, hi range and freq
@@ -250,8 +252,9 @@ instr stereoRender
 endin
 
 instr ambiMonitor
-	aoutL, aoutR ambi_decode giorder, gi2 ;  stereo decoding
-	outs aoutL, aoutR
+	;aoutL, aoutR ambi_decode giorder, gi2 ;  stereo decoding
+	;outs aoutL, aoutR
+	out zar(0),zar(1),zar(2),zar(3),zar(4),zar(5),zar(6),zar(7),zar(8),zar(9),zar(10),zar(11),zar(12),zar(13),zar(14),zar(15),zar(16),zar(17),zar(18),zar(19),zar(20),zar(21),zar(22),zar(23),zar(24),zar(25),zar(26),zar(27),zar(28),zar(29),zar(30),zar(31),zar(32),zar(33),zar(34),zar(35)
 endin
 instr ambiRender
 	k0 ambi_write_B "B_form.wav",giorder,24

@@ -70,8 +70,6 @@ s1.init({src: p1.canvas})
 s2.init({src: p2.canvas})
 s3.init({src: p3.canvas})
 sources=[s0,s1,s2,s3]
-
-
   src(o0)
     .modulatePixelate(osc(0.1,8,10),1000)
     //.modulateRotate(osc(0.2),1,0.01) //multiple, scrollX, speed
@@ -92,6 +90,7 @@ sources=[s0,s1,s2,s3]
       .out(o0)
     //s2.init({src: p3.canvas})
     src(o2)
+        .blend(s1, 3, 0.9, 4)
           .repeatX(Math.sin(time)*3, 1)
           //.modulateRotate(osc(0.7))
           .saturate(0.1)
@@ -103,11 +102,11 @@ sources=[s0,s1,s2,s3]
           .out(o2)
 //shape([30, 7, 9].fast(9.0)).modulateScale(osc(10)).out(o3)
     src(o3)
-      blendSrc=sources[()=>select]
-        .blend(blendSrc, 3, 0.9, 4)
+    //  blendSrc=sources[()=>select]
+        .blend(s2, 3, 0.9, 4)
         .add(o0)
         //.modulatePixelate(osc(0.2,0.3,100),700)
-        .modulateScale(osc(0.1,3,0),1)
+        .modulateScale(osc(0.05,2,2),1)
         //.brightness(()=>bright)
         .add(osc(0.3,1,8))
         .mask(shape([200, 20, 4].fast(0.7)).modulateScale(osc(()=>modosc)).repeatX(()=>loop*Math.sin(4)))

@@ -44,7 +44,7 @@ squ = 0.5
 
 p1 = new P5()
   // load video
-  vid1 = p1.loadImage(atom.project.getPaths()[0]+'/media/IMG_6254.jpg')
+  vid1 = p1.loadImage(atom.project.getPaths()[0]+'/media/img3.jpg')
   // set video to loop
   //vid1.loop()
   // draw to canvas
@@ -56,7 +56,7 @@ p1.hide()
 
 p2 = new P5()
   // load video
-  vid2 = p2.loadImage(atom.project.getPaths()[0]+'/media/IMG_0142.jpg')
+  vid2 = p2.loadImage(atom.project.getPaths()[0]+'/media/img0.jpg')
   // set video to loop
   //vid1.loop()
   // draw to canvas
@@ -68,7 +68,7 @@ p2.hide()
 
 p3 = new P5()
   // load video
-  vid3 = p3.loadImage(atom.project.getPaths()[0]+'/media/IMG_5113.jpg')
+  vid3 = p3.loadImage(atom.project.getPaths()[0]+'/media/img8.jpg')
   // set video to loop
   //vid1.loop()
   // draw to canvas

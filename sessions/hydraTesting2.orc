@@ -1,11 +1,11 @@
-
+seed=0
 monitorMode 0 	;0 = stereo, 1 = ambisonic
 kill("ambiRender")
 schedule("thepast", 0, 50, 2) 
-schedule("forest", 0,100,1) ;1,8,9,59,58,18
+schedule("forest", 0,4,8) ;8,9,59,58,18
 schedule("elemental", 0, 30, 30) 	;1
-schedule("spindle", 0, 45, 6, 0.52) 	;6
-schedule("earth", 0, 15, 70)	;p4=freq
+schedule("spindle", 0, 4.5, 6, 0.52) 	;6
+schedule("earth", 0, 55.2, 70)	;p4=freq
 schedule("magnesium", 0,.25,80)  	;p4 = freq
 schedule("theSwarm",0,35,4)	;9,1,4,5
 
@@ -13,7 +13,7 @@ schedule("ambiRender",0,300)
 start("stereoRender") 		;render stereo file
 
 instr forest 
-	;schedule(p1,p3,p3,p4)
+;	schedule(p1,p3,p3,p4)
 ;	if sometimes(0.5, 1, 0) == 1 then
 	Sample = sound("soundbits",p4)
 	isusamp=0.6 ; max sustain volume
@@ -42,14 +42,13 @@ instr forest
 	al, ar declickst adelL, adelR
 	sbus_mix "master", al, ar
 	effect_mix "verbmix", al, ar, 0.9
-	krandblend1=random(0,1)
-	krandblend2=random(0,1)
-	makeOSC("blend1", 1.1)
-	makeOSC("blend2", 0.3)
-	makeOSC("modosc", 10)
-	kimg=p4%10
-	makeOSC("image", kimg)
-	makeOSC("loop", 1030)
+	kimage=random(0,10)
+	kimage=int(kimage)
+	kloopmt=line(70,p3,2)
+	koss=random(1,70)
+	makeOSC("image", kimage)
+	makeOSC("loop", kloopmt)
+;	makeOSC("modosc", koss)
 ;endif
 endin
 
@@ -118,15 +117,10 @@ instr spindle
 	;prints "Sample: %i %s Number: %i \n", p1, Sample,p4
 	krms=rms(al)
 	krms*=5
-	makeOSC("blend1", 8.3)
-	makeOSC("blend2", 0.3)
-	makeOSC("modosc", 1000)
-	makeOSC("image", 1)
-	makeOSC("loop", 70)
+	makeOSC("spindle",krms)
 endin
 
 instr earth
-;	schedule(p1,p3,p3)
 	iampsus =random(0.2,0.5) 
 	iramp = p3*0.1
 	kamp=linseg(0, iramp, iampsus, p3-iramp*2, iampsus, iramp, 0)
@@ -146,11 +140,8 @@ instr earth
 	kalt=linseg(0,p3*0.5,0,p3*0.125,90,p3*0.125,0,p3*0.125,90,p3*0.125,0);lfo(40, 0.5)
 	kdist=1;line(0.5,p3,1)
 	kout ambi_enc_dist al, giorder, kazim,kalt,kdist
-	makeOSC("blend1", 0.3)
-	makeOSC("blend2", 0.3)
-	makeOSC("modosc", 10)
-	makeOSC("image", 3)
-	makeOSC("loop", kmod*1000)
+	makeOSC("earth", kazim)
+;	schedule(p1,p3,p3)
 endin
 
 
@@ -220,6 +211,13 @@ instr thepast
 	kverbmix = 0.5
 	sbus_mix "master", al, ar
 	effect_mix "verbmix", al, ar,kverbmix 
+	kimage=random(0,10)
+	kimage=int(kimage)
+	kloopmt=random(2, 100)
+	koss=random(1,7)
+	makeOSC("image", kimage)
+	makeOSC("loop", kloopmt)
+	makeOSC("modosc", koss)
 ;	endif
 endin
 
