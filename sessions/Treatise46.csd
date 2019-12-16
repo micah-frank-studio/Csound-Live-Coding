@@ -6,21 +6,24 @@ PREPARED PIANO : JACOB SACKS
 SAXOPHONE : CHET DOXAS
 LIVE CODE : MICAH FRANK
 
+TREATISE 46
+
 monitorMode 0 	;0 = stereo, 1 = ambisonic
-kill("theSwarm")
-schedule("thepast", 0, 150, 21) ;1,3,4,8,24
-schedule("forest", 0,60)
-schedule("elemental", 0, 50, 0) 	;0,1
+kill("cone")
+schedule("thepast", 0, 150, 1) ;1,3,4,8,24
+schedule("forest", 0,60, 13) ;0,3,5i,13
+schedule("elemental", 0, 50, 9) 	;1,5,6,7
 schedule("spindle", 0, 65, 19) ;30,21,22,38(raph)
 schedule("earth", 0, 50)
-schedule("cone", 0, .15) 
-schedule("theSwarm",0,60,10)	;3, 
+schedule("cone", 0, 0.35) 
+schedule("theSwarm",0,60,5)	;3, 
 
 schedule("ambiRender",0,170)
 start("stereoRender") 		;render stereo file
 
 instr forest 
-	Sample = sound("field", 3)
+	;schedule(p1,p3,p3)
+	Sample = sound("field", p4)
 	isusamp=0.2 ; max sustain volume
 	kamp =linseg(0,1,0.2,p3-(p3*0.1-1),isusamp,p3*0.1-1,0) 
 	kpitch=linseg(0.2,p3*0.5,0.7,p3*0.5,-0.2)
@@ -30,7 +33,8 @@ instr forest
 	iolaps = 2
 	agrainL, agrainR diskgrain Sample, kamp, kdens, kpitch, kgrsize, kstr, gi1, iolaps
 	kfiltmod=line(1500, p3, 3000)
-	afiltL, afiltR threepole agrainL, agrainR, kfiltmod, 0.1, 0.2
+	kenv=linseg(0,p3*0.25,1,p3*0.5,1,p3*0.25,0)
+	afiltL, afiltR threepole agrainL*kenv, agrainR*kenv, kfiltmod, 0.1, 0.2
 	kdelay=0.4
 	kfb=0.4
 	kdpitch=linseg(1,p3,0.5)
@@ -43,20 +47,28 @@ instr forest
 	al, ar declickst adelL, adelR
 	sbus_mix "master", al, ar
 	effect_mix "verbmix", al, ar, 0.6
-	;schedule(p1,p3,p3)
+	krandblend1=random(0,1)
+	krandblend2=random(0,1)
+	makeOSC("blend1", 1.1)
+	makeOSC("blend2", 0.3)
+	makeOSC("modosc", 10)
+	kimg=p4%10
+	makeOSC("image", kimg)
+	makeOSC("loop", 1030)
 endin
 
 
 instr elemental
+	;schedule(p1,p3,p3)
 	irand = random(1,118) ;iranddur=random(0.2,9)
-	irandpitch=random(-2, 4)
-	Sample = sound("ton\e", p4)
+	irandpitch=random(-1, 0.5)
+	Sample = sound("tone", p4)
 	Smachine = "grain"
 	idur =p3 
 	iampsus = 0.2	
 	iramp = p3*0.1
 	kamp=linseg(0, iramp, iampsus, p3-iramp*2, iampsus, iramp, 0)
-	kpitch=1 ;linseg(0.9,p3,0.3)
+	kpitch=irandpitch;linseg(0.9,p3,0.3)
 	kstr=linseg(2.1, p3*0.5, 1, p3*0.5, 1)
 	kdens=10
 	kgrsize=0.2
@@ -81,10 +93,16 @@ instr elemental
 	kout ambi_enc_dist al+ar, giorder, kazim,kalt,kdist
 	sbus_mix "master", al, ar
 	effect_mix "verbmix", al, ar, 0.4
-;schedule(p1,p3,p3)
+	kimg=(int(random(5,10)))
+	makeOSC("blend1", 2.3)
+	makeOSC("blend2", .6)
+	makeOSC("modosc", random(3,20))
+	makeOSC("image", kimg)
+	makeOSC("loop",int(gauss(1000)))
 endin
 
 instr spindle
+	;schedule(p1, p3, p3)
 	Sample = sound("soundbits", p4)
 	iampsus = 0.2
 	iramp = p3*0.1
@@ -105,11 +123,18 @@ instr spindle
 	kout ambi_enc_dist al+ar, giorder, kazim,kalt,kdist
 	sbus_mix "master", al, ar
 	effect_mix "verbmix", al, ar,kverbmix 
-	prints "Sample: %i %s Number: %i \n", p1, Sample,p4
-	;schedule(p1, p3, p3)
+	;"prints "Sample: %i %s Number: %i \n", p1, Sample,p4
+	krms=rms(al)
+	krms*=5
+	makeOSC("blend1", 8.3)
+	makeOSC("blend2", 0.3)
+	makeOSC("modosc", 1000)
+	makeOSC("image", 1)
+	makeOSC("loop", 70)
 endin
 
 instr earth
+;	schedule(p1,p3,p3)
 	iampsus =0.3;random(0.2,0.5) 
 	iramp = p3*0.1
 	kamp=linseg(0, iramp, iampsus, p3-iramp*2, iampsus, iramp, 0)
@@ -128,13 +153,19 @@ instr earth
 	kalt=linseg(0,p3*0.5,0,p3*0.125,90,p3*0.125,0,p3*0.125,90,p3*0.125,0);lfo(40, 0.5)
 	kdist=1;line(0.5,p3,1)
 	kout ambi_enc_dist al, giorder, kazim,kalt,kdist
-;	schedule(p1,p3,p3)
+	kimg=(int(random(3,5)))
+	makeOSC("blend1", 0.3)
+	makeOSC("blend2", .6)
+	makeOSC("modosc", random(3,20))
+	makeOSC("image", kimg)
+	makeOSC("loop", kmod*3000)
 endin
 
 
 instr cone 
+;	schedule(p1,p3,p3)
 	if sometimes(0.8, 1, 0) == 1 then
-	iampsus =random(0.3,0.2) 
+	iampsus =random(0.6,0.2) 
 	iranddur=1;abs(gauss(0.5))+0.12
 	kamp=expseg(iampsus, p3*iranddur, 0.001)
 	irand=random(40, 170)
@@ -162,10 +193,17 @@ instr cone
 	kout ambi_enc_dist al, giorder, kazim,kalt,kdist
 	sbus_mix "master", al, ar
 	effect_mix "verbmix", al, ar, 0.8
+	kimg=(int(random(5,10)))
+	makeOSC("blend1", random(0,2))
+;	makeOSC("blend2", .2)
+;	makeOSC("modosc", random(3,1))
+;	makeOSC("image", kimg)
+	makeOSC("loop", irand*3000)
 endif
-;	schedule(p1,p3,p3)
 endin
+
 instr thepast
+	;schedule(p1, p3, p3)
 	Sample = sound("soundbits", p4)
 	iampsus = 0.3
 	iramp = p3*0.1
@@ -185,7 +223,14 @@ instr thepast
 	kverbmix = 0.8
 	sbus_mix "master", al, ar
 	effect_mix "verbmix", al, ar,kverbmix 
-	;schedule(p1, p3, p3)
+	krandblend1=0.4
+	krandblend2=random(0,1)
+	makeOSC("blend1", 1.1)
+	makeOSC("blend2", 0.3)
+	makeOSC("modosc", 10)
+	kimg=p4%10
+	makeOSC("image", 0)
+	makeOSC("loop", 1030)
 endin
 
 instr theSwarm
@@ -226,5 +271,5 @@ instr monster1
 	effect_mix "verbmix", ainL, ainR, 0.8
 	sbus_clear("radrainbow")
 endin
-start("monster1",0,1)
+;start("monster1",0,1)
 

@@ -1,9 +1,9 @@
 
 monitorMode 0 	;0 = stereo, 1 = ambisonic
-kill("ambiRender")
-schedule("thepast", 0, 50, 2) 
-schedule("forest", 0,100,1) ;1,8,9,59,58,18
-schedule("elemental", 0, 30, 30) 	;1
+kill("forest")
+schedule("thepast", 0, 50, 1) ;2,1,3
+schedule("forest", 0,100,59) ;1,8,9,59,58,18
+schedule("elemental", 0, 30,2) 	;1,2
 schedule("spindle", 0, 45, 6, 0.52) 	;6
 schedule("earth", 0, 15, 70)	;p4=freq
 schedule("magnesium", 0,.25,80)  	;p4 = freq
@@ -20,7 +20,7 @@ instr forest
 	kamp = linseg(0, 1, isusamp, p3, isusamp, 10, 0)
 	iarr[] fillarray 0.2, 0.1, 0.33,-0.2
 	irandsel=random(0,3)
-	kpitch=line(0.1,p3,4)
+	kpitch=line(0.1,p3,2)
 	;kpitch=random(-2, 2);linseg(0.9,p3*0.5,0.7,p3*0.5,-0.9)
 	kstr=line(0.2, p3, 2)
 	kdens=linseg(10,p3*0.3,40,p3*0.7,10)
@@ -65,7 +65,7 @@ instr elemental
 	iampsus = 0.2	
 	iramp = p3*0.1
 	kamp=linseg(0, iramp, iampsus, p3-iramp*2, iampsus, iramp, 0)
-	kpitch=line(0.2,p3,2)
+	kpitch=line(irandpitch,p3,0.8)
 	kstr=linseg(0.1, p3*0.5, 1, p3*0.5, 1)
 	kdens=20
 	kgrsize=0.2
@@ -75,7 +75,7 @@ instr elemental
 	ips     = 1/iolaps
 		a1L syncloop kamp, kdens, kpitch, kgrsize, ips*kstr, 0, ftlen(iL)/sr, iL, 1, iolaps
 		a1R syncloop kamp, kdens, kpitch, kgrsize, ips*kstr, 0, ftlen(iR)/sr, iR, 1, iolaps
-	kfiltmod=line(4000, p3, 100)
+	kfiltmod=line(40, p3, 4000)
 	afiltL, afiltR threepole a1L, a1R, kfiltmod, 0.1, 0.2
 	kdelay=0.2
 	kfb=0.7
@@ -90,6 +90,12 @@ instr elemental
 	kout ambi_enc_dist al+ar, giorder, kazim,kalt,kdist
 	sbus_mix "master", al, ar
 	effect_mix "verbmix", al, ar, 0.6
+	kimg=(int(random(5,10)))
+	makeOSC("blend1", 2.3)
+	makeOSC("blend2", .6)
+	makeOSC("modosc", random(3,20))
+	makeOSC("image", kimg)
+	makeOSC("loop",int(gauss(1000)))
 endin
 
 instr spindle
@@ -135,8 +141,8 @@ instr earth
 	kmod = irand2 ;linseg(irand, p3, irand2) ;create random modulator for VCO freq
 	ipw =random(0.05, 0.93)
 	amodfreq =vco2(kamp, kmod,4,ipw) 
-	kfreq=random(190, 220)
-	ipitch =random(80, 220)
+	kfreq=random(90, 120)
+	ipitch =random(70, 120)
 	avco vco2 kamp*0.4, ipitch, 12
 	asig=avco*amodfreq
 	al declick asig
@@ -146,11 +152,12 @@ instr earth
 	kalt=linseg(0,p3*0.5,0,p3*0.125,90,p3*0.125,0,p3*0.125,90,p3*0.125,0);lfo(40, 0.5)
 	kdist=1;line(0.5,p3,1)
 	kout ambi_enc_dist al, giorder, kazim,kalt,kdist
+	kimg=(int(random(3,5)))
 	makeOSC("blend1", 0.3)
-	makeOSC("blend2", 0.3)
-	makeOSC("modosc", 10)
-	makeOSC("image", 3)
-	makeOSC("loop", kmod*1000)
+	makeOSC("blend2", .6)
+	makeOSC("modosc", random(3,20))
+	makeOSC("image", kimg)
+	makeOSC("loop", kmod*3000)
 endin
 
 
@@ -191,7 +198,7 @@ instr magnesium
 endin
 
 instr thepast
-	;schedule(p1, p3, p3)
+;	schedule(p1, p3, p3)
 ;	if sometimes(0.3, 1, 0) == 1 then
 	Sample = sound("spire", p4)
 	iampsus = 0.4
@@ -220,6 +227,14 @@ instr thepast
 	kverbmix = 0.5
 	sbus_mix "master", al, ar
 	effect_mix "verbmix", al, ar,kverbmix 
+	krandblend1=0.4
+	krandblend2=random(0,1)
+	makeOSC("blend1", 1.1)
+	makeOSC("blend2", 0.3)
+	makeOSC("modosc", 10)
+	kimg=p4%10
+	makeOSC("image", 0)
+	makeOSC("loop", 1030)
 ;	endif
 endin
 

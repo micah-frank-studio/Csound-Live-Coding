@@ -82,7 +82,7 @@ else if (tidal.image === 1){
 }
 else if (tidal.image === 2){
   vid3 = p3.loadImage(atom.project.getPaths()[0]+'/media/img2.jpg')
-  vid2 = p3.loadImage(atom.project.getPaths()[0]+'/media/img7.jpg')
+  vid2 = p3.loadImage(atom.project.getPaths()[0]+'/media/img0.jpg')
   vid1 = p3.loadImage(atom.project.getPaths()[0]+'/media/img6.jpg')
 }
 else if (tidal.image === 3){
@@ -97,24 +97,38 @@ else if (tidal.image === 4){
 }
 else if (tidal.image === 5){
   vid3 = p3.loadImage(atom.project.getPaths()[0]+'/media/img5.jpg')
+  vid2 = p3.loadImage(atom.project.getPaths()[0]+'/media/img11.jpg')
+  vid1 = p3.loadImage(atom.project.getPaths()[0]+'/media/img2.jpg')
 }
 else if (tidal.image === 6){
   vid3 = p3.loadImage(atom.project.getPaths()[0]+'/media/img6.jpg')
+  vid1 = p3.loadImage(atom.project.getPaths()[0]+'/media/img11.jpg')
+  vid2 = p3.loadImage(atom.project.getPaths()[0]+'/media/img8.jpg')
 }
 else if (tidal.image === 7){
   vid3 = p3.loadImage(atom.project.getPaths()[0]+'/media/img7.jpg')
+  vid1 = p3.loadImage(atom.project.getPaths()[0]+'/media/img1.jpg')
+  vid2 = p3.loadImage(atom.project.getPaths()[0]+'/media/img4.jpg')
 }
 else if (tidal.image === 8){
   vid3 = p3.loadImage(atom.project.getPaths()[0]+'/media/img8.jpg')
+  vid1 = p3.loadImage(atom.project.getPaths()[0]+'/media/img5.jpg')
+  vid2 = p3.loadImage(atom.project.getPaths()[0]+'/media/img10.jpg')
 }
 else if (tidal.image === 9){
   vid3 = p3.loadImage(atom.project.getPaths()[0]+'/media/img9.jpg')
+  vid2 = p3.loadImage(atom.project.getPaths()[0]+'/media/img3.jpg')
+  vid1 = p3.loadImage(atom.project.getPaths()[0]+'/media/img0.jpg')
 }
 else if (tidal.image === 10){
   vid3 = p3.loadImage(atom.project.getPaths()[0]+'/media/img10.jpg')
+  vid1 = p3.loadImage(atom.project.getPaths()[0]+'/media/img1.jpg')
+  vid2 = p3.loadImage(atom.project.getPaths()[0]+'/media/img0.jpg')
 }
 else if (tidal.image === 11){
   vid3 = p3.loadImage(atom.project.getPaths()[0]+'/media/img11.jpg')
+  vid2 = p3.loadImage(atom.project.getPaths()[0]+'/media/img5.jpg')
+  vid1 = p3.loadImage(atom.project.getPaths()[0]+'/media/img6.jpg')
 }
 })
 
